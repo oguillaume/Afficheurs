@@ -1,0 +1,184 @@
+format 76
+"autres" // Voyageurs::autres
+  revision 1
+  modified_by 2 "adm"
+  // class settings
+  //class diagram settings
+  draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+  //use case diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default class_drawing_mode default shadow default show_stereotype_properties default
+  //sequence diagram settings
+  show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+  //collaboration diagram settings
+  show_full_operations_definition default show_hierarchical_rank default write_horizontally default class_drawing_mode default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+  //object diagram settings
+   write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+  //component diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //deployment diagram settings
+  package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //state diagram settings
+  package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  //activity diagram settings
+  package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+  show_infonote default drawing_language default show_stereotype_properties default
+  
+  deploymentview 128130 "autres"
+    //deployment diagram settings
+    package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+    draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+    artifact 128770 "authentifier-erreur2"
+      stereotype "source"
+      associated_classes
+      end
+    end
+
+    artifact 128898 "authentifier2"
+      stereotype "source"
+      php_src "<?php 
+/*function identifiant_unique() {
+	return md5 ( uniqid ( rand () ) );
+}*/
+function utilisateur_existe($identifiant,$mot_de_passe) {
+$connexion = mysqli_connect('localhost','root');
+mysqli_select_db($connexion,'voyageurs');
+$sql = 'SELECT 1 FROM acces ';
+$sql .= 'WHERE identifiant = ? AND mot_de_passe = ?';
+$requête = mysqli_stmt_init($connexion);
+$ok = mysqli_stmt_prepare($requête,$sql);
+$pass_hache = sha1($mot_de_passe);
+$ok = mysqli_stmt_bind_param($requête,'ss',$identifiant,$pass_hache);
+$ok = mysqli_stmt_execute($requête);
+mysqli_stmt_bind_result($requête,$existe);
+$ok = mysqli_stmt_fetch($requête);
+mysqli_stmt_free_result($requête);
+return (bool) $existe;
+}
+function authentification($message) {
+header(\"WWW-Authenticate: Basic realm=$message\");
+header('HTTP/1.0 401 Unauthorized');
+include('authentifier-erreur2.php'); // Si annuler
+exit;
+}
+if (!isset($_SERVER['PHP_AUTH_USER'])) {
+authentification('Login');
+} else {
+$identifiant = $_SERVER['PHP_AUTH_USER'];
+$mot_de_passe = $_SERVER['PHP_AUTH_PW'];
+if (utilisateur_existe($identifiant,$mot_de_passe)) {
+header('location: formulaire.php');
+exit;
+} else {
+authentification('Login : identification incorrecte');
+}
+}
+?>"
+      associated_classes
+      end
+    end
+
+    artifact 129026 "url-session-login"
+      stereotype "source"
+      php_src "<?php
+function identifiant_unique() {
+	return md5 ( uniqid ( rand () ) );
+}
+function utilisateur_existe($identifiant, $mot_de_passe) {
+	$connexion = mysqli_connect ( 'localhost', 'root' );
+	mysqli_select_db ( $connexion, 'bts_session' );
+	$sql = 'SELECT 1 FROM utilisateurs ';
+	$sql .= 'WHERE identifiant = ? AND mot_de_passe = ?';
+	$requête = mysqli_stmt_init ( $connexion );
+	$ok = mysqli_stmt_prepare ( $requête, $sql );
+	$pass_hache = sha1 ( $mot_de_passe );
+	$ok = mysqli_stmt_bind_param ( $requête, 'ss', $identifiant, $pass_hache );
+	$ok = mysqli_stmt_execute ( $requête );
+	mysqli_stmt_bind_result ( $requête, $existe );
+	$ok = mysqli_stmt_fetch ( $requête );
+	mysqli_stmt_free_result ( $requête );
+	return ( bool ) $existe;
+}
+$identifiant = ' ';
+$mot_de_passe = ' ';
+$message = ' ';
+if (isset ( $_POST ['connexion'] )) {
+	$identifiant = $_POST ['identifiant'];
+	$mot_de_passe = $_POST ['mot_de_passe'];
+	if (utilisateur_existe ( $identifiant, $mot_de_passe )) {
+		$session = identifiant_unique ();
+		$date = date ( '\\l\\e d/m/Y à H:i:s' );
+		$url = \"?session=$session&date=\" . rawurlencode ( $date ) . \"&identifiant=\" . rawurlencode ( $identifiant );
+		header ( \"location:url-session-page1bis.php$url\" );
+		exit ();
+	} else {
+		$message = 'Identification incorrecte. Essayez de nouveau.';
+	}
+}
+?>
+<html>
+<head>
+<meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\" />
+<title>Login</title>
+</head>
+<body>
+	<form action=\"url-session-login.php\" method=\"post\">
+		<table border=\"0\">
+			<tr>
+				<td align=\"right\">Identifiant :</td>
+				<td><input type=\"text\" Name=\"identifiant\"
+					value=\"&lt;?php echo $identifiant; ?&gt;\" /></td>
+			</tr>
+			<tr>
+				<td align=\"right\">Mot de passe :</td>
+				<td><input type=\"password\" Name=\"mot_de_passe\"
+					value=\"&lt;?php echo $mot_de_passe; ?&gt;\" /></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td align=\"right\"><input type=\"submit\" name=\"connexion\"
+					value=\"Connexion\" /></td>
+			</tr>
+		</table>
+<?php echo $message; ?>"
+      associated_classes
+      end
+    end
+
+    artifact 129154 "url-session-page1bis"
+      stereotype "source"
+      php_src "<?php
+if (! isset ( $_GET ['session'] )) {
+	header ( 'location: url-session-login.php' );
+	exit ();
+} else {
+	$session = $_GET ['session'];
+	$date = $_GET ['date'];
+	$identifiant = $_GET ['identifiant'];
+	$message = \"Session : $session - $identifiant - $date\";
+}
+$url = \"?session=$session&date=\" . rawurlencode ( $date ) . \"&identifiant=\" . rawurlencode ( $identifiant );
+$actuel = 'Nous sommes le ' . date ( 'd/m/Y' ) . ' ; il est ' . date ( 'H:i:s' );
+?>
+<html>
+<head>
+<meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\" />
+<title>Page 1</title>
+</head>
+<body>
+	<b>Page 1 - <?php echo $actuel; ?></b>
+	<br />
+<?php echo $message; ?>"
+      associated_classes
+      end
+    end
+
+    artifact 129282 "url-session-page2bis"
+      stereotype "source"
+      associated_classes
+      end
+    end
+  end
+end

@@ -1,0 +1,442 @@
+format 76
+"Voyageurs" // Voyageurs
+  revision 1
+  modified_by 2 "adm"
+  // class settings
+  //class diagram settings
+  draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+  //use case diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default class_drawing_mode default shadow default show_stereotype_properties default
+  //sequence diagram settings
+  show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+  //collaboration diagram settings
+  show_full_operations_definition default show_hierarchical_rank default write_horizontally default class_drawing_mode default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+  //object diagram settings
+   write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+  //component diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //deployment diagram settings
+  package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //state diagram settings
+  package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  //activity diagram settings
+  package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+  show_infonote default drawing_language default show_stereotype_properties default
+  
+  deploymentview 128002 "Voyageurs"
+    //deployment diagram settings
+    package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+    draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+    artifact 128002 "Afficheur"
+      stereotype "source"
+      php_src "<?php
+
+				/////////////////////////////////////////////////////////////////////////////////
+
+												//AFFICHEUR IRIS\\\\
+
+				/////////////////////////////////////////////////////////////////////////////////
+
+require_once 'connection.php';				
+require_once 'requete_choix.php';
+
+date_default_timezone_set('Europe/Paris');
+
+$Tab4=array();
+if ($Lieu!=0){
+	
+	$Afficheur=$resultat_lieu->type_afficheur;
+	if ($Consigne!=0){	
+		$Message=$resultat_consi->libelle_cons;
+	}
+	else if ($Securite!=0){
+		switch ($Securite){
+			case 1 :
+				$Message=\"Le petit \".$Nom.\" \".$resultat_secur->libelle_secu;
+				break;
+			case 2 : 
+				$Message=$resultat_secur->libelle_secu;
+				$Tab4=Array(0x1B,0x30,0x6E,0x5A);
+				break;}
+	}
+	else if ($Dedicace!=0){
+		
+		$Message=$resultat_dedic->heure_dedi.\" \".$resultat_dedic->lieu.\" \".$resultat->auteur;
+	}
+	else if ($Spectacle!=0){
+		
+		$Message=$resultat_specta->heure.\" \".$resultat_specta->libelle_spect;
+	}
+	else{
+		$Message=date('H:i:s');
+	}
+	
+	
+
+	
+	
+if ($Afficheur == \"IRIS\")
+{
+	echo 'Afficheur : IRIS <I>Selection</I> - ';
+	
+	
+	// $Couleur = $_POST[\"Couleur\"];
+	$Couleur = \"Arc\";
+	if ($Couleur == \"Rouge\") {
+		$Tab2 = Array(0x1C,0x34); }
+	if ($Couleur == \"Arc\") {
+		$Tab2 = Array(0x1C,0x41); }
+	if ($Couleur == \"Vert\") {
+		$Tab2 = Array(0x1C,0x35); }
+	if ($Couleur == \"Jaune\") {
+		$Tab2 = Array(0x1C,0x38); }
+	
+	$Tab3 = Array(0x04,0x00);
+	
+/*	 if ($Animation==\"animaux\") $Tab4=Array(0x1B,0x30,0x6E,0x57);
+	 else if ($Animation=\"voiture\") $Tab4=Array(0x1B,0x30,0x6E,0x59);*/
+	if ($Message == \"\") 
+	{
+		echo '<B>Problème Message absent</B><BR>'; 
+	}
+	else
+	{
+		$Tab1 = Array(0,0,0,0,0,0,0,0x01,0x5A,0x30,0x30,0x02,0x41,0x41,0x1b,0x20,0x61);
+		$socket_client = socket_create(AF_INET,SOCK_STREAM,SOL_TCP); 
+		socket_connect($socket_client,\"192.168.12.105\",\"10001\"); 
+		
+
+		for($i=0;$i<17;$i=$i+1)
+		{
+			$Partie1 = sprintf(\"%c\", $Tab1[$i]);
+			socket_send($socket_client, $Partie1, 1, 1);
+		}
+	
+		for($i=0;$i<2;$i=$i+1)
+		{	
+			$Partie2 = sprintf(\"%c\", $Tab2[$i]);
+			socket_send($socket_client, $Partie2, 1, 1);
+		}
+
+		socket_send($socket_client, $Message, strlen($Message), 1);
+
+		for($i=0;$i<2;$i=$i+1)
+		{
+			$Partie3 = sprintf(\"%c\", $Tab3[$i]);
+			socket_send($socket_client, $Partie3, 1, 1);
+		}
+		for($i=0;$i<2;$i=$i+1)
+		{
+			$Partie4 = sprintf(\"%c\", $Tab3[$i]);
+			socket_send($socket_client, $Partie4, 1, 1);
+		}
+
+		echo '<B>OK</B><BR>';
+		socket_close($socket_client);
+	}
+}
+else
+{
+	echo 'Afficheur : IRIS - <I>Non Selectionné</I><BR>';
+}
+			/////////////////////////////////////////////////////////////////////////////////
+
+											//AFFICHEUR ENR\\\\
+
+			/////////////////////////////////////////////////////////////////////////////////
+
+if ($Afficheur == \"ENR\")
+{
+	echo 'Afficheur : ENR - <I>Selectionné</I> - ';
+	echo $Message;
+	$Partie1 = \"<ID00><PA><FE><CF><FX>\";
+	
+	// $Couleur = $_POST[\"Couleur\"];
+	$Couleur = \"Arc\";
+	if($Couleur == \"Rouge\") {
+		$ChoixCouleur =\"<CB>\"; }
+	if($Couleur == \"Vert\") {
+		$ChoixCouleur =\"<CM>\"; }
+	if($Couleur == \"Jaune\") {
+		$ChoixCouleur =\"<CG>\"; }
+	if($Couleur == \"Arc\") {
+		$ChoixCouleur =\"<CP>\"; }
+	
+
+	if ($Message == \"\") 
+	{
+		echo '<B>Problème Message absent</B><BR>'; 
+	}
+	else
+	{
+		$Partie2 = \"<FP>\\r\\n\";
+		$Trame = $Partie1.$ChoixCouleur.$Message.$Partie2;
+	
+		$socket_client = socket_create(AF_INET,SOCK_STREAM,SOL_TCP); 
+		socket_connect($socket_client,\"192.168.12.102\",\"10001\"); 
+		socket_send($socket_client, $Trame, strlen($Trame), 1);
+		echo '<B>OK</B><BR>';
+		socket_close($socket_client);
+	}
+}
+else
+{
+	echo 'Afficheur : ENR - <I>Non Selectionné</I>';
+}
+}
+?>"
+      associated_classes
+      end
+    end
+
+    artifact 128130 "authentification"
+      stereotype "source"
+      php_src "<?php
+function identifiant_unique() {
+	return md5 ( uniqid ( rand () ) );
+}
+function utilisateur_existe($identifiant, $mot_de_passe) {
+	$connexion = mysqli_connect ( 'localhost', 'root' );
+	mysqli_select_db ( $connexion, 'voyageurs' );
+	$sql = 'SELECT 1 FROM acces ';
+	$sql .= 'WHERE identifiant = ? AND mot_de_passe = ?';
+	$requête = mysqli_stmt_init ( $connexion );
+	$ok = mysqli_stmt_prepare ( $requête, $sql );
+	$pass_hache = sha1 ( $mot_de_passe );
+	$ok = mysqli_stmt_bind_param ( $requête, 'ss', $identifiant, $pass_hache );
+	$ok = mysqli_stmt_execute ( $requête );
+	mysqli_stmt_bind_result ( $requête, $existe );
+	$ok = mysqli_stmt_fetch ( $requête );
+	mysqli_stmt_free_result ( $requête );
+	return ( bool ) $existe;
+}
+$identifiant = ' ';
+$mot_de_passe = ' ';
+$message = ' ';
+if (isset ( $_POST ['connexion'] )) {
+	$identifiant = $_POST ['identifiant'];
+	$mot_de_passe = $_POST ['mot_de_passe'];
+	if (utilisateur_existe ( $identifiant, $mot_de_passe )) {
+		$session = identifiant_unique ();
+		$date = date ( '\\l\\e d/m/Y à H:i:s' );
+		$url = \"?session=$session&date=\" . rawurlencode ( $date ) . \"&identifiant=\" . rawurlencode ( $identifiant );
+		header ( \"location:formulaire.php$url\" );
+		exit ();
+	} else {
+		$message = 'Identification incorrecte. Essayez de nouveau.';
+	}
+}
+?>
+<html>
+<head>
+<meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\" />
+
+	<link href=\"css/style.css\" rel=\"stylesheet\" type=\"text/css\" />
+<title>Login</title>
+</head>
+<body>
+	<h1 align=\"center\">Festival Etonnants voyageurs</br>Espace Administration</h1>
+	<p>Espace r&eacute;serv&eacute; : Veuillez vous identifier !</p>
+	<form action=\"authentification.php\" method=\"post\">
+		<div class=\"general\" align=\"center\">
+		
+		<table border=\"0\">
+			<tr>
+				<td align=\"right\">Identifiant :</td>
+				<td><input type=\"text\" Name=\"identifiant\"
+					value=\"\" /></td>
+			</tr>
+			<tr>
+				<td align=\"right\">Mot de passe :</td>
+				<td><input type=\"password\" Name=\"mot_de_passe\"
+					value=\"\" /></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td align=\"right\"><input type=\"submit\" name=\"connexion\"
+					value=\"Connexion\" /></td>
+			</tr>
+		</table>
+		
+		</div>
+<?php echo $message; ?>"
+      associated_classes
+      end
+    end
+
+    artifact 128258 "connection"
+      stereotype "source"
+      php_src "<?php 
+//recherche en BDD
+$Bdd_hote='localhost';
+$Bdd_port='3306';
+$Bdd_nom_bd='voyageurs';
+$Bdd_user='root';
+$Bdd_mot_de_passe='';
+
+
+$connexion= new PDO('mysql:host='.$Bdd_hote.';port='.$Bdd_port.';dbname='.$Bdd_nom_bd,$Bdd_user,$Bdd_mot_de_passe);
+?>"
+      associated_classes
+      end
+    end
+
+    artifact 128386 "formulaire"
+      stereotype "source"
+      php_src "<?php
+require_once 'connection.php';
+require_once 'requete_select.php';
+
+if (! isset ( $_GET ['session'] )) {
+	header ( 'location: authentification.php' );
+	exit ();
+} else {
+	$session = $_GET ['session'];
+	$date = $_GET ['date'];
+	$identifiant = $_GET ['identifiant'];
+	$message = \"Session : $session - $identifiant - $date\";
+}
+$url = \"?session=$session&date=\" . rawurlencode ( $date ) . \"&identifiant=\" . rawurlencode ( $identifiant );
+$actuel = 'Nous sommes le ' . date ( 'd/m/Y' ) . ' ; il est ' . date ( 'H:i:s' );
+?>
+<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//FR\"
+   \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
+<html> 
+<head>
+	<title>Afficheurs</title>
+		<meta charset=\"utf-8\" />
+		<script type=\"text/javascript\" src=\"js/jquery.js\"></script>
+		<script type=\"text/javascript\" src=\"js/script.js\"></script>
+	<link href=\"css/style.css\" rel=\"stylesheet\" type=\"text/css\" />
+</head>
+<body onload=\"miseazero()\">
+
+	<h1 class=\"gras\" align=\"center\">
+	Gestion des panneaux d'affichage Festival Grands voyageurs
+	</h1>
+	<!-- Affichage de l'heure courante -->
+	<?php
+	date_default_timezone_set('Europe/Paris');
+	echo '<p align=\"center\">',date('H:i:s'),'</p>',\"\\n\";
+	?>
+	
+<form method=\"post\" action =\"Afficheur.php\">
+<div class=\"general\">
+			<div id=\"div3\" class=\"div3\"><p>Securite et Consignes</p></div>
+			<div id=\"div4\" class=\"div4\"><p>Manifestations</p></div>
+			<div class=\"div1\" id=\"div1\">
+			<fieldset id=\"gestion\">
+				<!-- choix de la consigne -->
+				Consigne
+				<select id=\"consigne\" name=\"consigne\">
+				<option value=\"0\"></option>
+				<?php
+					$selected='';
+					while ($resultat=$forme_resultats_cons->fetch())
+					{
+					$lieu_cons=$resultat->libelle_cons;
+					$selected=0;
+					echo \"\\t\",'<option value=\"',$resultat->id_cons,'\"',$selected,'>',$lieu_cons,'</option>',\"n\";
+					$selected='';
+					}
+				?>
+				</select></br>Securit&eacute;
+				<!-- choix du message de sécurité -->
+				<select id=\"securite\" name=\"securite\">
+				<option value=\"0\"></option>
+				<?php
+					$selected='';
+					while ($resultat=$forme_resultats_secu->fetch())
+					{
+					$lieu_secu=$resultat->libelle_secu;
+					$selected=0;
+					echo \"\\t\",'<option value=\"'.$resultat->id_secu.'\"'.$selected.'>'.$lieu_secu.'</option>',\"\\n\";
+					$selected='';
+					}
+				?>"
+      associated_classes
+      end
+    end
+
+    artifact 128514 "requete_choix"
+      stereotype "source"
+      php_src "<?php 
+	$Lieu= $_POST[\"lieu\"];
+	$Consigne=$_POST[\"consigne\"];
+	$Securite=$_POST[\"securite\"];
+	$Dedicace=$_POST[\"dedicace\"];
+	$Spectacle=$_POST[\"spectacle\"];	
+	$Nom=$_POST[\"nom\"];
+	$Heure=getdate();
+	
+	$requete_lieu=\"SELECT * FROM zones where id_zone=\".$Lieu;
+	$forme_resultats_lieu=$connexion->query($requete_lieu);
+	$forme_resultats_lieu->setFetchMode(PDO::FETCH_OBJ);
+	$resultat_lieu=$forme_resultats_lieu->fetch();
+	
+	$requete_consi=\"SELECT * FROM consignes where id_cons=\".$Consigne;
+	$forme_resultats_consi=$connexion->query($requete_consi);
+	$forme_resultats_consi->setFetchMode(PDO::FETCH_OBJ);
+	$resultat_consi=$forme_resultats_consi->fetch();	
+		
+	$requete_secur=\"SELECT * FROM securite where id_secu=\".$Securite;
+	$forme_resultats_secur=$connexion->query($requete_secur);
+	$forme_resultats_secur->setFetchMode(PDO::FETCH_OBJ);
+	$resultat_secur=$forme_resultats_secur->fetch();	
+		
+
+	$requete_dedic=\"SELECT * FROM dedicaces where id_dedi=\".$Dedicace;
+	$forme_resultats_dedic=$connexion->query($requete_dedic);
+	$forme_resultats_dedic->setFetchMode(PDO::FETCH_OBJ);
+	$resultat_dedic=$forme_resultats_dedic->fetch();	
+	
+	$requete_specta=\"SELECT * FROM spectacles where id_spect=\".$Spectacle;
+	$forme_resultats_specta=$connexion->query($requete_specta);
+	$forme_resultats_specta->setFetchMode(PDO::FETCH_OBJ);
+	$resultat_specta=$forme_resultats_specta->fetch();	
+?>"
+      associated_classes
+      end
+    end
+
+    artifact 128642 "requete_select"
+      stereotype "source"
+      php_src "<?php
+$requete_zone=\"SELECT * FROM zones\";
+$forme_resultats_zone=$connexion->query($requete_zone);
+$forme_resultats_zone->setFetchMode(PDO::FETCH_OBJ);
+$lieu_zone=array();
+
+$requete_cons=\"SELECT * FROM consignes\";
+$forme_resultats_cons=$connexion->query($requete_cons);
+$forme_resultats_cons->setFetchMode(PDO::FETCH_OBJ);
+$lieu_cons=array();
+
+$requete_secu=\"SELECT * FROM securite\";
+$forme_resultats_secu=$connexion->query($requete_secu);
+$forme_resultats_secu->setFetchMode(PDO::FETCH_OBJ);
+$lieu_secu=array();
+
+$requete_dedi=\"SELECT * FROM dedicaces\";
+$forme_resultats_dedi=$connexion->query($requete_dedi);
+$forme_resultats_dedi->setFetchMode(PDO::FETCH_OBJ);
+$lieu_dedi=array();
+
+$requete_spect=\"SELECT * FROM spectacles\";
+$forme_resultats_spect=$connexion->query($requete_spect);
+$forme_resultats_spect->setFetchMode(PDO::FETCH_OBJ);
+$lieu_spect=array();
+
+	
+	
+?>"
+      associated_classes
+      end
+    end
+  end
+
+  package_ref 128130 // autres
+end

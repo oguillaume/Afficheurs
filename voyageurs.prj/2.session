@@ -1,0 +1,8 @@
+window_sizes 1500 787 375 1125 600 82
+show_stereotypes
+selected artifact_ref 128002 // Afficheur
+open
+  deploymentview_ref 128002 // Voyageurs
+  deploymentview_ref 128130 // autres
+end
+end
